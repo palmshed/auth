@@ -17,6 +17,7 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
+      - run: npm run build --workspace=@palmshed/auth-core
       - run: npx tsc --noEmit
 
   test:

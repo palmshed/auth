@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/dev.ts",
     "build": "tsc",
-    "start": "node dist/dev.js"
+    "test": "echo ok"
   },
   "dependencies": {
     "@palmshed/auth-core": "file:../../packages/core",
