@@ -71,37 +71,38 @@ This repository stays at `v1.0.0-rc.1` until the library is validated in a produ
 
 ### Gate: v1.0.0
 
-Publish only after **all** of the following are complete:
+Publish only after **all** phases are complete.
 
-1. **First Consumer** — One existing Palmshed project is migrated to `palmshed/auth`. Its local authentication implementation is removed. Sign up, sign in, sign out, session restore, password reset, RBAC, and token refresh all work. No library changes are required during migration.
+#### Phase 1: Deploy
 
-2. **Examples** — Each runs with `npm install && npm run dev` and includes a short README:
-   - `examples/hono`
-   - `examples/express`
-   - `examples/react`
-   - `examples/nextjs`
+- Create the Vercel project from `apps/server`
+- Configure all required environment variables
+- Verify the health endpoint and every authentication endpoint
+- Enable production logging and error reporting
 
-3. **Templates** — Each is production-ready (not a demo):
-   - `templates/hono-auth`
-   - `templates/express-auth`
-   - `templates/react-auth`
-   - `templates/next-auth`
+#### Phase 2: First Consumer
 
-4. **Documentation** — Present at the repo root:
-   - CONTRIBUTING.md
-   - CODE_OF_CONDUCT.md
-   - LICENSE (MIT)
-   - SUPPORT.md
-   - SECURITY.md (with vulnerability reporting policy)
-   - Version compatibility matrix
-   - Upgrade guide
+- Migrate one Palmshed application to use the hosted authentication service
+- Remove its local authentication implementation
+- Do not add compatibility code to the application. If migration exposes friction, improve `palmshed/auth` instead
 
-5. **Release Validation** — Install the published packages in a clean repository; confirm no internal path dependencies, ESM/CJS compatibility, tree shaking, and generated type declarations; smoke test exactly as users will consume.
+#### Phase 3: Validation
 
-### When gated steps pass
+- Verify sign up, sign in, sign out, session restore, refresh, password reset, RBAC, and concurrent sessions
+- Verify deployment from a clean clone
+- Verify local development and production behave consistently
 
-1. Update version in `package.json` (drop `-rc.X`)
-2. Run `npm test` — all must pass
-3. Run `npm run build` — all packages must compile
-4. Create GitHub release with semantic version tag
-5. Publish to npm with `--provenance`
+#### Phase 4: Release
+
+- If the migration succeeds without API changes, tag `v1.0.0`
+- Publish the packages
+- Announce `palmshed/auth` as the standard authentication platform for the organization
+
+### After the gate
+
+No new authentication implementations should be created in individual repositories. Every project should either:
+
+- consume the hosted service (`apps/server`), or
+- embed the published packages when self-hosting is required.
+
+`palmshed/auth` is the single source of truth for authentication across the Palmshed ecosystem. Future work should focus on adoption, maintenance, and incremental improvements rather than creating parallel implementations.
