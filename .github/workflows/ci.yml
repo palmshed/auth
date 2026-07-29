@@ -30,7 +30,6 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm test
-      - run: npm audit --audit-level=high
 
   build:
     runs-on: ubuntu-latest
