@@ -1,5 +1,23 @@
 # AGENTS.md
 
+## Project Structure
+
+```text
+palmshed/auth
+├── apps/
+│   └── server/          # Deployed authentication service (Vercel)
+├── packages/
+│   ├── core/            # Framework-agnostic auth engine
+│   ├── client/          # Browser/Node.js client
+│   ├── hono/            # Hono adapter (middleware + handlers)
+│   ├── express/         # Express adapter (middleware + router)
+│   ├── storage-postgres/# PostgreSQL storage adapter
+│   ├── storage-sqlite/  # SQLite storage adapter
+│   └── storage-redis/   # Redis rate limiter adapter
+├── examples/            # Example integrations
+└── templates/           # Production-ready templates
+```
+
 ## Build
 
 ```bash
@@ -18,6 +36,13 @@ npm test -w packages/core
 
 # Watch mode
 npm test -w packages/core -- --watch
+```
+
+## Dev Server
+
+```bash
+# Start the auth API server locally
+npm run dev -w @palmshed/auth-server
 ```
 
 ## Test Coverage

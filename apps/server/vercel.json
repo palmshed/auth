@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd ../.. && npm run build --workspace=@palmshed/auth-server",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && npm install",
+  "framework": null,
+  "functions": {
+    "api/[[route]].ts": {
+      "memory": 256,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/[[route]]" }
+  ]
+}

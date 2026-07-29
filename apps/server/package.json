@@ -1,0 +1,24 @@
+{
+  "name": "@palmshed/auth-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/dev.ts",
+    "build": "tsc",
+    "start": "node dist/dev.js"
+  },
+  "dependencies": {
+    "@palmshed/auth-core": "file:../../packages/core",
+    "@palmshed/auth-hono": "file:../../packages/hono",
+    "@palmshed/auth-storage-postgres": "file:../../packages/storage-postgres",
+    "hono": "^4.0.0",
+    "resend": "^4.0.0"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.0.0",
+    "@types/node": "^26.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.6.0"
+  }
+}

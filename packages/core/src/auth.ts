@@ -70,6 +70,7 @@ export type AuthOptions = {
   passwordHasher?: PasswordHasher;
   rateLimiter?: RateLimiter;
   captchaVerifier?: CaptchaVerifier;
+  onPasswordReset?: (email: string, token: string) => Promise<void>;
 };
 
 export class Auth {
@@ -80,6 +81,7 @@ export class Auth {
   private captchaVerifier: CaptchaVerifier | null;
   private signingKeys: SigningKeyManager;
   private listeners: AuthStateListener[] = [];
+  private onPasswordReset?: (email: string, token: string) => Promise<void>;
 
   constructor(options: AuthOptions) {
     this.storage = options.storage;
@@ -87,6 +89,7 @@ export class Auth {
     this.passwordHasher = options.passwordHasher || new Argon2idHasher(this.config.password.hashParams);
     this.rateLimiter = options.rateLimiter || new MemoryRateLimiter(this.config.rateLimit.maxAttempts, this.config.rateLimit.windowMs);
     this.signingKeys = new SigningKeyManager(this.storage, this.config);
+    this.onPasswordReset = options.onPasswordReset;
     if (this.config.captcha.provider === "hcaptcha" && this.config.captcha.secret) {
       this.captchaVerifier = new HcaptchaVerifier(this.config.captcha.secret);
     } else if (this.config.captcha.provider === "turnstile" && this.config.captcha.secret) {
@@ -359,6 +362,7 @@ export class Auth {
       const token = generateResetToken(this.config.token.length);
       const expiresAt = createExpiry(this.config.token.resetExpiresIn);
       await this.storage.createPasswordReset(user.id, token, expiresAt);
+      await this.onPasswordReset?.(user.email, token);
       return { success: true, data: undefined };
     } catch {
       return { success: false, error: errors.internal() };

@@ -3,7 +3,8 @@
   "private": true,
   "description": "Authentication platform for Palmshed projects",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/server"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
