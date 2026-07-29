@@ -1,0 +1,16 @@
+export { Auth } from "./auth.js";
+export type { AuthOptions, CaptchaVerifier, HcaptchaVerifier, TurnstileVerifier } from "./auth.js";
+export type { AuthConfig } from "./config.js";
+export { defaultConfig, resolveConfig } from "./config.js";
+export type { AuthStorage, CreateUserData, CreateSessionData } from "./storage/interface.js";
+export { MemoryStorage } from "./storage/memory.js";
+export type { PasswordHasher } from "./password.js";
+export { Argon2idHasher } from "./password.js";
+export { generateResetToken, createExpiry, isExpired } from "./token.js";
+export { generateSecret, constantTimeEqual, signToken, verifySignedToken, createSignedToken, parseSignedToken, generateSessionTokens } from "./crypto.js";
+export type { RateLimiter } from "./rate-limit.js";
+export { MemoryRateLimiter } from "./rate-limit.js";
+export type { User, Session, PasswordReset, SigningKey, Role, Permission, DeviceInfo, AuthContext, AuthResponse, AuthStateChange, AuthStateListener, SignInInput, SignUpInput, ForgotPasswordInput, ResetPasswordInput, TokenPair } from "./types.js";
+export { AuthError, errors } from "./errors.js";
+export { hasPermission, hasAllPermissions, hasAnyPermission, requirePermission, defaultRoles } from "./rbac.js";
+export type { PermissionCheck } from "./rbac.js";
