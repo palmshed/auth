@@ -56,7 +56,7 @@ export class AuthClient {
   private onStateChange?: (state: AuthState) => void;
   private interceptors: RequestInterceptor[] = [];
   private _state: AuthState = { status: "loading" };
-  private refreshPromise: Promise<boolean> | null = null;
+  private refreshPromise: Promise<AuthResponse<{ token: string; refreshToken: string }>> | null = null;
 
   constructor(config: AuthClientConfig) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, "");
@@ -120,7 +120,7 @@ export class AuthClient {
     if (token) headers["authorization"] = `Bearer ${token}`;
 
     let url = `${this.baseUrl}${path}`;
-    let opts = { ...options, headers };
+    let opts: RequestInit = { ...options, headers };
 
     for (const interceptor of this.interceptors) {
       const result = interceptor({ url, options: opts, headers });
@@ -212,7 +212,7 @@ export class AuthClient {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ refreshToken }),
       });
-      const body = await res.json() as { ok?: boolean; token?: string; refreshToken?: string };
+      const body = await res.json() as { ok?: boolean; token?: string; refreshToken?: string; error?: string };
       if (body.ok && body.token) {
         this.setToken(body.token);
         if (body.refreshToken) this.setRefreshToken(body.refreshToken);

@@ -6,14 +6,14 @@ export type { Auth } from "@palmshed/auth-core";
 
 export function middleware(auth: Auth): RequestHandler {
   return async (req: Request, _res: Response, next: NextFunction) => {
-    (req as Record<string, unknown>).auth = auth;
+    (req as unknown as Record<string, unknown>).auth = auth;
     const token = getToken(req);
     if (token) {
       const result = await auth.getSession(token);
       if (result.success) {
-        (req as Record<string, unknown>).user = result.data.user;
-        (req as Record<string, unknown>).session = result.data.session;
-        (req as Record<string, unknown>).authToken = token;
+        (req as unknown as Record<string, unknown>).user = result.data.user;
+        (req as unknown as Record<string, unknown>).session = result.data.session;
+        (req as unknown as Record<string, unknown>).authToken = token;
       }
     }
     next();
@@ -22,7 +22,7 @@ export function middleware(auth: Auth): RequestHandler {
 
 export function requireAuth(): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!(req as Record<string, unknown>).user) {
+    if (!(req as unknown as Record<string, unknown>).user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -32,12 +32,12 @@ export function requireAuth(): RequestHandler {
 
 export function requirePermission(resource: string, action: string): RequestHandler {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as Record<string, unknown>).user as { permissions?: string[]; role?: string } | undefined;
+    const user = (req as unknown as Record<string, unknown>).user as { permissions?: string[]; role?: string } | undefined;
     if (!user) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-    const auth = (req as Record<string, unknown>).auth as Auth;
+    const auth = (req as unknown as Record<string, unknown>).auth as Auth;
     const token = getToken(req);
     const allowed = await auth.hasPermission(token, resource, action);
     if (!allowed) {
@@ -83,8 +83,8 @@ export function createRouter(auth: Auth): Router {
   });
 
   router.get("/session", (req: Request, res: Response) => {
-    const user = (req as Record<string, unknown>).user;
-    const session = (req as Record<string, unknown>).session;
+    const user = (req as unknown as Record<string, unknown>).user;
+    const session = (req as unknown as Record<string, unknown>).session;
     if (!user) return res.json({ ok: false });
     res.json({ ok: true, user, session });
   });

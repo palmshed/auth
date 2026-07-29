@@ -49,11 +49,18 @@ export function createHandlers(auth: Auth) {
         ipAddress?: string;
       }>();
       const ip = body.ipAddress || c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "";
+      const deviceInfo = body.deviceInfo ? {
+        userAgent: body.deviceInfo.userAgent,
+        platform: body.deviceInfo.platform ?? null,
+        device: body.deviceInfo.device ?? null,
+        browser: body.deviceInfo.browser ?? null,
+        version: body.deviceInfo.version ?? null,
+      } : undefined;
       const result = await auth.signIn({
         username: body.username || "",
         password: body.password || "",
         captcha: body.captcha,
-        deviceInfo: body.deviceInfo,
+        deviceInfo,
         ipAddress: ip,
       });
       if (!result.success) return sendError(c, result.error);
