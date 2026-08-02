@@ -112,7 +112,8 @@ export function createRouter(auth: Auth): Router {
   });
 
   router.post("/forgot-password", async (req: Request, res: Response) => {
-    await auth.forgotPassword({ username: req.body.username || "", captcha: req.body.captcha });
+    const result = await auth.forgotPassword({ username: req.body.username || "", captcha: req.body.captcha });
+    if (!result.success) return sendError(res, result.error);
     res.json({ ok: true });
   });
 

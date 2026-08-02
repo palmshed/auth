@@ -131,7 +131,8 @@ export function createHandlers(auth: Auth) {
 
     forgotPassword: async (c: Context) => {
       const body = await c.req.json<{ username?: string; captcha?: string }>();
-      await auth.forgotPassword({ username: body.username || "", captcha: body.captcha });
+      const result = await auth.forgotPassword({ username: body.username || "", captcha: body.captcha });
+      if (!result.success) return sendError(c, result.error);
       return c.json({ ok: true }, 200);
     },
 
