@@ -157,7 +157,7 @@ export class AuthClient {
   }
 
   async signIn(username: string, password: string, options?: RequestOptions): Promise<AuthResponse<{ token: string; refreshToken: string; user: User }>> {
-    const result = await this.signedRequest<{ token: string; refreshToken: string; user: User }>("/signin", {
+    const result = await this.signedRequest<{ token: string; refreshToken: string; user: User }>("/api/v1/signin", {
       method: "POST",
       body: JSON.stringify({ username, password, captcha: options?.captcha }),
       signal: options?.signal,
@@ -171,7 +171,7 @@ export class AuthClient {
   }
 
   async signUp(username: string, password: string, email?: string, options?: RequestOptions): Promise<AuthResponse<void>> {
-    return this.signedRequest<void>("/signup", {
+    return this.signedRequest<void>("/api/v1/signup", {
       method: "POST",
       body: JSON.stringify({ username, password, email, captcha: options?.captcha }),
       signal: options?.signal,
@@ -179,18 +179,22 @@ export class AuthClient {
   }
 
   async signOut(options?: { signal?: AbortSignal }): Promise<AuthResponse<void>> {
-    const result = await this.signedRequest<void>("/signout", { method: "POST", signal: options?.signal }, false);
+    const result = await this.signedRequest<void>("/api/v1/signout", { method: "POST", signal: options?.signal }, false);
     this.clearTokens();
     this.setState({ status: "unauthenticated" });
     return result;
   }
 
   async getSession(options?: { signal?: AbortSignal }): Promise<AuthResponse<{ user: User }>> {
-    const result = await this.signedRequest<{ user: User }>("/session", { signal: options?.signal });
+    const result = await this.signedRequest<{ user: User }>("/api/v1/session", { signal: options?.signal });
     if (result.ok) {
       this.setState({ status: "authenticated", user: result.data.user, token: this.getToken() || "" });
     }
     return result;
+  }
+
+  async getConfig(options?: { signal?: AbortSignal }): Promise<AuthResponse<{ captchaProvider: string; captchaSiteKey: string; allowRegistration: boolean }>> {
+    return this.signedRequest<{ captchaProvider: string; captchaSiteKey: string; allowRegistration: boolean }>("/api/v1/config", { signal: options?.signal }, false);
   }
 
   async refreshToken(): Promise<AuthResponse<{ token: string; refreshToken: string }>> {
@@ -207,7 +211,7 @@ export class AuthClient {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) return { ok: false, error: "No refresh token" };
     try {
-      const res = await this.fetcher(`${this.baseUrl}/refresh`, {
+      const res = await this.fetcher(`${this.baseUrl}/api/v1/refresh`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ refreshToken }),
