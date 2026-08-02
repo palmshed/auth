@@ -57,6 +57,18 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
       - run: npm run build
-      - run: npm publish --workspaces --provenance --access public
+      - name: Publish unreleased versions
+        run: |
+          set -euo pipefail
+          for pkg in packages/*/package.json; do
+            name=$(node -p "require('./$pkg').name")
+            ver=$(node -p "require('./$pkg').version")
+            if npm view "$name@$ver" version >/dev/null 2>&1; then
+              echo "skip $name@$ver (already published)"
+            else
+              echo "publish $name@$ver"
+              npm publish "$(dirname "$pkg")" --provenance --access public
+            fi
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

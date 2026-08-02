@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-08-02)
 
 ### Added
 - `AuthClient.forgotPassword(username)` and `AuthClient.resetPassword(token, password)` methods, so client applications no longer need raw `fetch()` calls for the password recovery flow.
