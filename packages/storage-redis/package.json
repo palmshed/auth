@@ -25,5 +25,17 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/palmshed/auth.git"
+  },
+  "homepage": "https://github.com/palmshed/auth",
+  "bugs": {
+    "url": "https://github.com/palmshed/auth/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
