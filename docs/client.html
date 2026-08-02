@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Client - palmshed/auth</title>
+  <meta name="description" content="AuthClient API reference.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html" class="active">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>AuthClient</h2>
+      <p>Framework-agnostic. Works in browsers and Node.js. Tokens are stored in <code>localStorage</code> (configurable via <code>storage</code> and key options) and sent as an <code>Authorization: Bearer</code> header.</p>
+
+      <h3>Constructor</h3>
+      <pre><code>const client = new AuthClient({
+  baseUrl: "https://palmshed-auth.vercel.app",  // required
+  storageKey: "session",                          // token storage key
+  refreshKey: "session_refresh",                  // refresh token key
+  fetch: globalThis.fetch,                        // override the fetcher
+  onStateChange: (state) => {},                   // auth state subscription
+});</code></pre>
+      <p><code>baseUrl</code> is the server origin; the client appends the <code>/api/v1</code> paths itself.</p>
+    </section>
+
+    <section>
+      <h2>Methods</h2>
+      <p>All methods return an <code>AuthResponse</code>: <code>{ ok: true, data }</code> on success or <code>{ ok: false, error }</code> on failure. They never throw for request failures; use the <code>signal</code> option with an <code>AbortController</code> to time out long requests.</p>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>signIn(username, password, opts)</code></td><td>Sign in and store tokens</td></tr>
+          <tr><td><code>signUp(username, password, email, opts)</code></td><td>Create an account</td></tr>
+          <tr><td><code>signOut(opts)</code></td><td>End the session and clear tokens</td></tr>
+          <tr><td><code>getSession(opts)</code></td><td>Validate the current token, refresh if needed</td></tr>
+          <tr><td><code>refreshToken()</code></td><td>Exchange the refresh token for a new pair</td></tr>
+          <tr><td><code>forgotPassword(username, opts)</code></td><td>Request a reset link</td></tr>
+          <tr><td><code>resetPassword(token, password, opts)</code></td><td>Set a new password</td></tr>
+          <tr><td><code>getConfig(opts)</code></td><td>Read public captcha and registration config</td></tr>
+          <tr><td><code>getToken()</code> / <code>getRefreshToken()</code></td><td>Read stored tokens</td></tr>
+          <tr><td><code>clearTokens()</code></td><td>Remove stored tokens</td></tr>
+          <tr><td><code>isAuthenticated()</code></td><td>True when a token exists</td></tr>
+          <tr><td><code>addInterceptor(fn)</code></td><td>Rewrite requests before they are sent; returns an unsubscribe function</td></tr>
+        </tbody>
+      </table>
+      <p>Options accept <code>captcha</code> (the widget token) and <code>signal</code> (an <code>AbortSignal</code>).</p>
+    </section>
+
+    <section>
+      <h2>State</h2>
+      <p><code>client.state</code> is one of:</p>
+      <ul>
+        <li><code>{ status: "loading" }</code></li>
+        <li><code>{ status: "authenticated"; user; token }</code></li>
+        <li><code>{ status: "unauthenticated" }</code></li>
+        <li><code>{ status: "error"; error }</code></li>
+      </ul>
+      <p>Pass <code>onStateChange</code> to subscribe. For React, the runnable example in <code>examples/react</code> shows a <code>useAuth</code> hook built on these primitives.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

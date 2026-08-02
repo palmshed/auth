@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuration - palmshed/auth</title>
+  <meta name="description" content="Configuration options for palmshed/auth.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html" class="active">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>AuthConfig</h2>
+      <p>The <code>Auth</code> constructor takes a partial <code>AuthConfig</code>. Options are deep-merged over defaults. The hosted service and the template expose these as environment variables.</p>
+
+      <h3>Session</h3>
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>session.expiresIn</code></td><td>7 days</td><td>Access token lifetime</td></tr>
+          <tr><td><code>session.idleTimeout</code></td><td>4 hours</td><td>Session expires after inactivity</td></tr>
+          <tr><td><code>session.absoluteLifetime</code></td><td>30 days</td><td>Hard ceiling on session lifetime</td></tr>
+          <tr><td><code>session.maxConcurrentSessions</code></td><td>10</td><td>Oldest sessions are revoked beyond this</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Rate limiting</h3>
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>rateLimit.maxAttempts</code></td><td>10</td><td>Sign-in attempts before throttling</td></tr>
+          <tr><td><code>rateLimit.windowMs</code></td><td>15 minutes</td><td>Rate limit window</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Captcha</h3>
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>captcha.provider</code></td><td><code>none</code>, <code>hcaptcha</code>, or <code>turnstile</code></td></tr>
+          <tr><td><code>captcha.siteKey</code></td><td>Public widget key</td></tr>
+          <tr><td><code>captcha.secret</code></td><td>Server-side verification secret</td></tr>
+        </tbody>
+      </table>
+
+      <h3>RBAC</h3>
+      <p>Permissions are strings in the form <code>resource:action</code> (for example <code>admin:panel</code>). Users carry a <code>role</code> and a permission list. Defaults for roles can be set in <code>config.rbac</code>. The admin role bypasses permission checks.</p>
+    </section>
+
+    <section>
+      <h2>Environment variables</h2>
+      <p>Used by the hosted service and the fullstack template. See <code>.env.example</code> in the repository for the complete list.</p>
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>DATABASE_URL</code></td><td>Postgres connection string</td></tr>
+          <tr><td><code>CAPTCHA_PROVIDER</code></td><td>Captcha provider (<code>none</code> disables)</td></tr>
+          <tr><td><code>HCAPTCHA_SITE_KEY</code>, <code>CAPTCHA_SECRET</code></td><td>Captcha keys</td></tr>
+          <tr><td><code>SESSION_EXPIRES_IN</code> and friends</td><td>Session lifetimes in milliseconds</td></tr>
+          <tr><td><code>RATE_LIMIT_MAX_ATTEMPTS</code>, <code>RATE_LIMIT_WINDOW_MS</code></td><td>Rate limits</td></tr>
+          <tr><td><code>RESEND_API_KEY</code>, <code>RESEND_FROM</code></td><td>Password-reset email</td></tr>
+          <tr><td><code>ALLOWED_ORIGIN</code></td><td>CORS origin</td></tr>
+          <tr><td><code>PUBLIC_BASE_URL</code></td><td>Base URL used in generated links</td></tr>
+        </tbody>
+      </table>
+      <p>Sensitive values are always injected through environment variables or configuration. They are never hardcoded or committed.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

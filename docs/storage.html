@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Storage - palmshed/auth</title>
+  <meta name="description" content="Storage adapters for palmshed/auth.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html" class="active">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>AuthStorage</h2>
+      <p>The core engine persists users, sessions, password resets, and signing keys through an <code>AuthStorage</code> interface. The interface defines full CRUD for each record, plus session cleanup and signing-key management. Any storage backend that implements it works; the contract is covered by the same tests across adapters.</p>
+    </section>
+
+    <section>
+      <h2>Adapters</h2>
+      <table>
+        <thead>
+          <tr><th>Package</th><th>Use for</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>@palmshed/auth-storage-postgres</code></td><td>Production. Runs schema creation via <code>migrate()</code></td></tr>
+          <tr><td><code>@palmshed/auth-storage-sqlite</code></td><td>Local development and small deployments</td></tr>
+          <tr><td><code>@palmshed/auth-storage-redis</code></td><td>Distributed rate-limit counters (with the core engine)</td></tr>
+          <tr><td><code>MemoryStorage</code> (in core)</td><td>Tests and ephemeral use; data is lost on restart</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Postgres</h2>
+      <pre><code>import { PostgresStorage } from "@palmshed/auth-storage-postgres";
+
+const storage = new PostgresStorage(process.env.DATABASE_URL);
+await storage.migrate();  // creates the schema if needed</code></pre>
+      <p>Tables live in a dedicated <code>auth</code> schema. Sessions and password resets cascade when a user is deleted. Signing keys are stored in the database so token verification works across restarts and instances.</p>
+    </section>
+
+    <section>
+      <h2>Signing keys</h2>
+      <p>Session tokens are HMAC-signed with a signing key held in storage. The manager rotates keys automatically, keeps several active keys for verification, and retires old keys after a grace period. This is what makes tokens survive a restart and multiple instances.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

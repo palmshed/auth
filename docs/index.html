@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>palmshed/auth - Documentation</title>
+  <meta name="description" content="Documentation for palmshed/auth, the Palmshed authentication platform.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark">
+      <img src="assets/mark.svg" alt="">
+      palmshed/auth
+    </span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <div class="hero">
+    <h1>palmshed/auth</h1>
+    <p>Authentication for Palmshed projects. A framework-agnostic core, server adapters, storage adapters, a browser client, and a hosted service.</p>
+  </div>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html" class="active">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>What it is</h2>
+      <p>palmshed/auth provides sign-up, sign-in, session management, password recovery, and role-based access control. The core engine is framework-agnostic. Adapters connect it to servers, databases, and browsers.</p>
+      <p>Two ways to use it:</p>
+      <ul>
+        <li><strong>Hosted service</strong> at <code>palmshed-auth.vercel.app</code>. Consume the API with <code>@palmshed/auth-client</code>. No server to run.</li>
+        <li><strong>Embedded</strong>. Use the published packages to run auth inside your own server with your own database.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Documentation</h2>
+
+      <a href="getting-started.html" class="card">
+        <div class="card-name">Getting started</div>
+        <div class="card-desc">Add authentication to a page or a server in a few minutes.</div>
+      </a>
+
+      <a href="configuration.html" class="card">
+        <div class="card-name">Configuration</div>
+        <div class="card-desc">Sessions, rate limits, captcha, and RBAC options.</div>
+      </a>
+
+      <a href="client.html" class="card">
+        <div class="card-name">Client</div>
+        <div class="card-desc">AuthClient API reference for browsers and Node.</div>
+      </a>
+
+      <a href="server.html" class="card">
+        <div class="card-name">Server</div>
+        <div class="card-desc">Hono and Express adapters, middleware, and handlers.</div>
+      </a>
+
+      <a href="storage.html" class="card">
+        <div class="card-name">Storage</div>
+        <div class="card-desc">The storage contract and its adapters.</div>
+      </a>
+
+      <a href="api.html" class="card">
+        <div class="card-name">HTTP API</div>
+        <div class="card-desc">Endpoints, requests, responses, and errors.</div>
+      </a>
+
+      <a href="migration.html" class="card">
+        <div class="card-name">Migration</div>
+        <div class="card-desc">Moving an existing app onto the client and the v1 API.</div>
+      </a>
+
+      <a href="deployment.html" class="card">
+        <div class="card-name">Deployment</div>
+        <div class="card-desc">Deploying the hosted service and self-hosting.</div>
+      </a>
+
+      <a href="troubleshooting.html" class="card">
+        <div class="card-name">Troubleshooting</div>
+        <div class="card-desc">Common problems and their causes.</div>
+      </a>
+    </section>
+
+    <section>
+      <h2>Packages</h2>
+      <table>
+        <thead>
+          <tr><th>Package</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>@palmshed/auth-core</code></td><td>Auth engine, config, token crypto, rate limiting, captcha</td></tr>
+          <tr><td><code>@palmshed/auth-client</code></td><td>Browser and Node.js client with token refresh</td></tr>
+          <tr><td><code>@palmshed/auth-hono</code></td><td>Hono middleware and route handlers</td></tr>
+          <tr><td><code>@palmshed/auth-express</code></td><td>Express middleware and router</td></tr>
+          <tr><td><code>@palmshed/auth-storage-postgres</code></td><td>PostgreSQL storage adapter</td></tr>
+          <tr><td><code>@palmshed/auth-storage-sqlite</code></td><td>SQLite storage adapter</td></tr>
+          <tr><td><code>@palmshed/auth-storage-redis</code></td><td>Redis rate limiter adapter</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

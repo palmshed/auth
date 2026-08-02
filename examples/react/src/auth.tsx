@@ -8,31 +8,46 @@ const client = new AuthClient({
 });
 
 export function useAuth() {
-  const [state, setState] = useState<AuthState>(client.state);
+  const [state, setState] = useState<AuthState>({ status: "loading" });
 
   useEffect(() => {
-    const unsub = client.addInterceptor(() => {});
-    return unsub;
-  }, []);
-
-  useEffect(() => {
-    if (client.isAuthenticated()) {
-      client.getSession().then((result) => {
-        if (!result.ok) setState({ status: "unauthenticated" });
-      });
-    } else {
-      setState({ status: "unauthenticated" });
-    }
+    let active = true;
+    (async () => {
+      if (!client.getToken()) {
+        if (active) setState({ status: "unauthenticated" });
+        return;
+      }
+      const result = await client.getSession();
+      if (!active) return;
+      if (result.ok) {
+        setState({
+          status: "authenticated",
+          user: result.data.user,
+          token: client.getToken() || "",
+        });
+      } else {
+        setState({ status: "unauthenticated" });
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const signIn = useCallback(async (username: string, password: string) => {
     const result = await client.signIn(username, password);
-    if (result.ok) setState({ status: "authenticated", user: result.data.user, token: result.data.token });
+    if (result.ok) {
+      setState({ status: "authenticated", user: result.data.user, token: result.data.token });
+    } else {
+      setState({ status: "error", error: result.error });
+    }
     return result;
   }, []);
 
   const signUp = useCallback(async (username: string, password: string, email?: string) => {
-    return client.signUp(username, password, email);
+    const result = await client.signUp(username, password, email);
+    if (!result.ok) setState({ status: "error", error: result.error });
+    return result;
   }, []);
 
   const signOut = useCallback(async () => {

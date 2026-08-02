@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Migration - palmshed/auth</title>
+  <meta name="description" content="Migrating an existing app onto palmshed/auth.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html" class="active">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>From raw fetch to the client</h2>
+      <p>The palmshed.github.io sign-in pages are the reference migration: they moved from hand-written <code>fetch()</code> calls plus manual <code>localStorage</code> handling to <code>@palmshed/auth-client</code>. The client owns token storage, the <code>Authorization</code> header, and token refresh.</p>
+      <p>Replace:</p>
+      <pre><code>// before
+const token = localStorage.getItem("session");
+const res = await fetch(API + "/api/v1/me", {
+  headers: { authorization: "Bearer " + token },
+});</code></pre>
+      <p>with:</p>
+      <pre><code>// after
+const client = new AuthClient({ baseUrl: API });
+const res = await client.getSession();</code></pre>
+      <p>See <a href="https://github.com/palmshed/auth/blob/main/UPGRADING.md">UPGRADING.md</a> for the full method-by-method table and rollback guidance.</p>
+    </section>
+
+    <section>
+      <h2>From another auth provider</h2>
+      <ol>
+        <li>Export existing users with an Argon2id-compatible password hash and a per-user salt, or force a password reset on first sign-in.</li>
+        <li>Migrate sessions: old tokens are signed with the previous provider's key and cannot be verified. Ask users to sign in again.</li>
+        <li>Stand up the storage (Postgres recommended) and run <code>migrate()</code>.</li>
+        <li>Point the client <code>baseUrl</code> at the service and remove the old SDK.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Version compatibility</h2>
+      <ul>
+        <li>The <code>/api/v1</code> contract is stable. The client works against it without version checks.</li>
+        <li>Breaking changes require a major version bump. Minor and patch releases are backward-compatible.</li>
+        <li>Storage adapters run the same contract tests, so an adapter swap does not change engine behavior.</li>
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

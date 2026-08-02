@@ -45,7 +45,8 @@ palmshed/auth
 │   └── storage-redis/     # Redis rate limiter adapter
 ├── examples/              # Reference integrations (use published packages)
 ├── e2e/                   # Playwright suite against the live site + backend
-├── templates/             # Production-ready templates (empty, see examples)
+├── templates/fullstack/   # Production-ready full-stack reference app
+└── docs/                  # Static HTML reference documentation
 ```
 
 ## Commands

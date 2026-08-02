@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `templates/fullstack`: production-ready reference application (Hono + Postgres server, sign-in and reset-password pages using `@palmshed/auth-client`).
+- `docs/`: static HTML reference documentation (setup, configuration, client, server, storage, API, migration, deployment, troubleshooting).
+- `examples/`: README covering the Express, Hono, and React examples; the React example is now a runnable Vite app.
+
 ## 1.1.0 (2026-08-02)
 
 ### Added

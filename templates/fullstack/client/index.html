@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Palmshed auth - sign in</title>
+  <style>
+    :root {
+      --bg: #080909; --surface: #0e1010; --text: #e1e2e2; --text-secondary: #8f9191;
+      --accent: #91AAA6; --border: rgba(255,255,255,0.04); --code-bg: rgba(255,255,255,0.015);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    main { max-width: 400px; margin: 0 auto; padding: 4rem 1.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .sub { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 2rem; }
+    label { display: block; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.375rem; }
+    input[type=text], input[type=password], input[type=email] {
+      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.625rem 0.75rem; color: var(--text); font-size: 0.9375rem; font-family: var(--font);
+    }
+    input:focus { outline: 1.5px solid var(--accent); outline-offset: 1px; }
+    .field { margin-bottom: 1.25rem; }
+    button {
+      width: 100%; background: var(--accent); color: #080909; border: none; border-radius: 6px;
+      padding: 0.7rem; font-size: 0.9375rem; font-weight: 500; cursor: pointer; font-family: var(--font);
+    }
+    button:disabled { opacity: 0.6; cursor: default; }
+    .row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8125rem; }
+    a { color: var(--accent); text-decoration: none; }
+    .msg { font-size: 0.875rem; margin-bottom: 1rem; min-height: 1.2rem; }
+    .msg.error { color: #d98a8a; }
+    .msg.ok { color: var(--accent); }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+    .panel .user { margin-bottom: 1.5rem; }
+    .panel .user .name { font-size: 1.125rem; font-weight: 500; }
+    .panel .user .meta { color: var(--text-secondary); font-size: 0.8125rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Sign in</h1>
+    <p class="sub" id="sub">Access your application.</p>
+    <div class="msg" id="msg"></div>
+
+    <div id="guest">
+      <form id="form" method="post">
+        <div class="field" id="emailField" hidden>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" id="submit">Sign in</button>
+        <div class="row">
+          <a href="reset-password.html">Forgot password?</a>
+          <a href="#" id="toggle">Create account</a>
+        </div>
+      </form>
+    </div>
+
+    <div id="authed" class="panel hidden">
+      <div class="user">
+        <div class="name" id="userName"></div>
+        <div class="meta" id="userMeta"></div>
+      </div>
+      <button type="button" id="signout">Sign out</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import { AuthClient } from "./assets/auth-client.js";
+
+    var client = new AuthClient({ baseUrl: window.location.origin });
+
+    var form = document.getElementById('form');
+    var msg = document.getElementById('msg');
+    var submit = document.getElementById('submit');
+    var toggle = document.getElementById('toggle');
+    var title = document.getElementById('title');
+    var sub = document.getElementById('sub');
+    var emailField = document.getElementById('emailField');
+    var guest = document.getElementById('guest');
+    var authed = document.getElementById('authed');
+    var userName = document.getElementById('userName');
+    var userMeta = document.getElementById('userMeta');
+    var mode = 'login';
+
+    function show(text, kind) { msg.textContent = text; msg.className = 'msg ' + (kind || ''); }
+    function captchaToken() { return ''; }
+
+    function showAuthed(user) {
+      guest.classList.add('hidden');
+      authed.classList.remove('hidden');
+      title.textContent = 'Signed in';
+      sub.textContent = '';
+      userName.textContent = user.username;
+      userMeta.textContent = 'Role: ' + user.role;
+    }
+
+    function showGuest() {
+      authed.classList.add('hidden');
+      guest.classList.remove('hidden');
+      title.textContent = 'Sign in';
+      sub.textContent = 'Access your application.';
+    }
+
+    if (client.getToken()) {
+      client.getSession().then(function (res) {
+        if (res.ok) showAuthed(res.data.user);
+        else { client.clearTokens(); showGuest(); }
+      });
+    } else {
+      showGuest();
+    }
+
+    toggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      mode = mode === 'login' ? 'register' : 'login';
+      if (mode === 'register') {
+        title.textContent = 'Create account';
+        sub.textContent = 'Register a new account.';
+        submit.textContent = 'Create account';
+        toggle.textContent = 'Sign in';
+        emailField.hidden = false;
+      } else {
+        title.textContent = 'Sign in';
+        sub.textContent = 'Access your application.';
+        submit.textContent = 'Sign in';
+        toggle.textContent = 'Create account';
+        emailField.hidden = true;
+      }
+      show('');
+    });
+
+    document.getElementById('signout').addEventListener('click', function () {
+      client.signOut().finally(function () { showGuest(); });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var username = document.getElementById('username').value.trim();
+      var password = document.getElementById('password').value;
+      if (!username || !password) { show('Fill in all fields.', 'error'); return; }
+      submit.disabled = true;
+      var done = function () { submit.disabled = false; };
+      if (mode === 'register') {
+        var email = document.getElementById('email').value.trim();
+        submit.textContent = 'Creating...';
+        client.signUp(username, password, email, { captcha: captchaToken() })
+          .then(function (res) {
+            if (res.ok) { show('Account created. You can now sign in.', 'ok'); toggle.click(); }
+            else show(res.error || 'Registration failed.', 'error');
+          })
+          .finally(done);
+        return;
+      }
+      submit.textContent = 'Signing in...';
+      client.signIn(username, password, { captcha: captchaToken() })
+        .then(function (res) {
+          if (res.ok) showAuthed(res.data.user);
+          else show(res.error || 'Sign in failed.', 'error');
+        })
+        .finally(done);
+    });
+  </script>
+</body>
+</html>

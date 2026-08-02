@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Troubleshooting - palmshed/auth</title>
+  <meta name="description" content="Common problems with palmshed/auth and their causes.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html" class="active">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>CORS errors in the browser</h2>
+      <p>Set <code>ALLOWED_ORIGIN</code> to the exact page origin, including scheme and port. For local development with the template, serve the client from the same origin so no CORS is involved. Check that the preflight request is reaching the service at all.</p>
+    </section>
+
+    <section>
+      <h2>401 on session check</h2>
+      <p>The client refreshes the token automatically once on a 401. A persistent 401 usually means the refresh token is missing or expired. Call <code>client.clearTokens()</code> and sign in again. If this happens for every visitor, check that sessions and signing keys are persisted; an in-memory storage loses them on restart.</p>
+    </section>
+
+    <section>
+      <h2>Captcha fails after upgrade</h2>
+      <p>Confirm <code>CAPTCHA_PROVIDER</code> and the site key/secret match the widget. With <code>none</code>, the client sends an empty token and the server skips verification. After changing providers, redeploy the service so the public config endpoint updates.</p>
+    </section>
+
+    <section>
+      <h2>Reset email never arrives</h2>
+      <p><code>forgot-password</code> always returns success. Verify the sender address is verified in Resend, that <code>RESEND_API_KEY</code> is set in the deployment, and that the reset link points at a reachable page. During local development with email disabled, the flow exercises everything except delivery.</p>
+    </section>
+
+    <section>
+      <h2>429 Too many requests</h2>
+      <p>Sign-in attempts are rate limited per the configured window. Wait for the window to pass, or raise <code>RATE_LIMIT_MAX_ATTEMPTS</code> for non-production environments. Distributed deployments should use the Redis rate limiter so counters are shared.</p>
+    </section>
+
+    <section>
+      <h2>Database changes not applied</h2>
+      <p>Run <code>storage.migrate()</code> on start, as the hosted service and template do. It creates tables if they are missing. If you manage the schema yourself, mirror the <code>auth</code> schema exactly, including cascade rules.</p>
+    </section>
+
+    <section>
+      <h2>Tokens invalid after redeploy</h2>
+      <p>Signing keys live in the database, so tokens survive restarts. If tokens break after a redeploy, the database likely is not shared between instances, or the signing-key table was wiped. See <a href="storage.html">Storage</a>.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

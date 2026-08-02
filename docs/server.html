@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Server - palmshed/auth</title>
+  <meta name="description" content="Server adapters for palmshed/auth.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html" class="active">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>Hosted service</h2>
+      <p>The hosted service in <code>apps/server</code> is a Hono application built on the published packages. It exposes the API under <code>/api/v1</code> and <code>/api/config</code>. CORS allows only the configured origin. This service is the reference for server setup.</p>
+    </section>
+
+    <section>
+      <h2>Hono</h2>
+      <p><code>@palmshed/auth-hono</code> provides middleware and handlers:</p>
+      <pre><code>import { Auth } from "@palmshed/auth-core";
+import { middleware, createHandlers } from "@palmshed/auth-hono";
+import { Hono } from "hono";
+
+const auth = new Auth({ storage, config });
+const app = new Hono();
+
+app.use("/api/*", middleware(auth));
+const h = createHandlers(auth);
+
+app.post("/api/v1/signin", h.signIn);
+app.post("/api/v1/signup", h.signUp);
+app.post("/api/v1/signout", h.signOut);
+app.get("/api/v1/session", h.session);
+app.post("/api/v1/refresh", h.refresh);</code></pre>
+      <p><code>middleware</code> resolves the session from the <code>Authorization</code> header and attaches the user to the context. <code>requireAuth()</code> and <code>requirePermission(scope, action)</code> protect routes.</p>
+      <p>The Hono example in <code>examples/hono</code> is the complete runnable version.</p>
+    </section>
+
+    <section>
+      <h2>Express</h2>
+      <p><code>@palmshed/auth-express</code> provides the same set as an Express router:</p>
+      <pre><code>import { middleware, requireAuth, createRouter } from "@palmshed/auth-express";
+
+app.use(express.json());
+app.use(middleware(auth));
+app.use("/api", createRouter(auth));
+
+app.get("/api/admin", requireAuth(), (req, res) => {
+  res.json({ ok: true, user: req.user });
+});</code></pre>
+      <p>The Express example in <code>examples/express</code> is the complete runnable version.</p>
+    </section>
+
+    <section>
+      <h2>Password reset email</h2>
+      <p>Pass an <code>onPasswordReset(email, token)</code> callback to the <code>Auth</code> constructor to send reset emails. The hosted service uses Resend when <code>RESEND_API_KEY</code> is set. Without a callback, <code>forgot-password</code> returns success without sending, so the endpoint cannot be used to enumerate accounts.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "palmshed-auth-fullstack-template",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server/src/index.ts",
+    "start": "tsx server/src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "@palmshed/auth-core": "^1.0.0",
+    "@palmshed/auth-hono": "^1.0.0",
+    "@palmshed/auth-storage-postgres": "^1.0.0",
+    "hono": "^4.6.0",
+    "resend": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

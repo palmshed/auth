@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting started - palmshed/auth</title>
+  <meta name="description" content="Add palmshed/auth to a page or a server.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-mark"><img src="assets/mark.svg" alt=""> palmshed/auth</span>
+    <ul class="nav-links" id="nav">
+      <li><a href="index.html" class="active">Docs</a></li>
+      <li><a href="https://github.com/palmshed/auth">GitHub</a></li>
+      <li><a href="https://www.npmjs.com/org/palmshed">npm</a></li>
+    </ul>
+    <button type="button" class="mobile-menu-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+  </nav>
+
+  <nav class="doc-nav" aria-label="Documentation">
+    <a href="index.html">Overview</a>
+    <a href="getting-started.html" class="active">Getting started</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="client.html">Client</a>
+    <a href="server.html">Server</a>
+    <a href="storage.html">Storage</a>
+    <a href="api.html">API</a>
+    <a href="migration.html">Migration</a>
+    <a href="deployment.html">Deployment</a>
+    <a href="troubleshooting.html">Troubleshooting</a>
+  </nav>
+
+  <div class="page">
+    <section>
+      <h2>Use the hosted service</h2>
+      <p>The quickest path. The hosted service at <code>palmshed-auth.vercel.app</code> runs the API; your page only needs the client.</p>
+      <pre><code>&lt;script type="module"&gt;
+  import { AuthClient } from "https://cdn.jsdelivr.net/npm/@palmshed/auth-client@1/dist/index.js";
+
+  const client = new AuthClient({ baseUrl: "https://palmshed-auth.vercel.app" });
+
+  const result = await client.signIn("alice", "password");
+  if (result.ok) {
+    console.log("Signed in as", result.data.user.username);
+  }
+&lt;/script&gt;</code></pre>
+      <p>For production, vendor the built client into your assets so your page does not depend on a CDN at runtime. The palmshed.github.io site does this and is the reference.</p>
+    </section>
+
+    <section>
+      <h2>Run the fullstack template</h2>
+      <p>For a self-hosted application with a login page and a database, copy <code>templates/fullstack</code> from the repository.</p>
+      <pre><code>cp -r templates/fullstack my-app
+cd my-app
+npm install
+cp .env.example .env   # set DATABASE_URL
+npm run dev</code></pre>
+      <p>The server serves the sign-in page and the API from the same origin. See <a href="deployment.html">Deployment</a>.</p>
+    </section>
+
+    <section>
+      <h2>Embed the packages</h2>
+      <p>For full control, add the packages to your own server and database.</p>
+      <pre><code>npm install @palmshed/auth-core @palmshed/auth-hono @palmshed/auth-storage-postgres</code></pre>
+      <pre><code>import { Auth } from "@palmshed/auth-core";
+import { PostgresStorage } from "@palmshed/auth-storage-postgres";
+import { middleware, createHandlers } from "@palmshed/auth-hono";
+
+const storage = new PostgresStorage(process.env.DATABASE_URL);
+await storage.migrate();
+
+const auth = new Auth({ storage, config: {} });</code></pre>
+      <p>See <a href="server.html">Server</a> for the full setup and <a href="examples/">examples/</a> for runnable Express, Hono, and React integrations.</p>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Palmshed</p>
+    <p>v1.1.0</p>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var nav = document.getElementById('nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>
