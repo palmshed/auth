@@ -6,3 +6,6 @@ dist
 .DS_Store
 .vercel
 .env*
+test-results/
+playwright-report/
+blob-report/
