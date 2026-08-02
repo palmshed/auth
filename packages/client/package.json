@@ -1,14 +1,14 @@
 {
   "name": "@palmshed/auth-client",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TypeScript client for palmshed-auth",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
@@ -17,5 +17,8 @@
   "devDependencies": {
     "typescript": "^5.6.0",
     "vitest": "^2.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
