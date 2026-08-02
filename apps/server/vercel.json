@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && npm run build --workspace=@palmshed/auth-server",
+  "buildCommand": "cd ../.. && npm run build --workspace=@palmshed/auth-core && npm run build --workspace=@palmshed/auth-hono && npm run build --workspace=@palmshed/auth-storage-postgres && npm run build --workspace=@palmshed/auth-server",
   "outputDirectory": "dist",
   "installCommand": "cd ../.. && npm install",
   "framework": null,
