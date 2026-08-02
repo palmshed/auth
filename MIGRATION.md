@@ -2,6 +2,10 @@
 
 Migrating from an ad hoc authentication implementation to `palmshed/auth`.
 
+> For existing Palmshed applications moving from hand-written `fetch()` calls to
+> `@palmshed/auth-client`, see [UPGRADING.md](UPGRADING.md). This document covers
+> the v0.x to v1.0.0 breaking changes inside the platform.
+
 ## Step 1: Replace password hashing
 
 **Before:**

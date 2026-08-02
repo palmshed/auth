@@ -36,7 +36,12 @@
 ## Captcha
 
 - Optional captcha verification (hCaptcha, Turnstile) on sign-in, sign-up, and forgot-password.
-- Captcha can be disabled in development.
+- Captcha can be disabled in development. Production (`palmshed-auth.vercel.app`) enforces hCaptcha.
+
+## Browser tokens
+
+- `@palmshed/auth-client` sends the session token as an `Authorization: Bearer` header, never as a cookie. This avoids CSRF on the sign-in flow.
+- Tokens are stored in `localStorage`. The XSS trade-off is documented in THREAT_MODEL.md.
 
 ## Best Practices
 

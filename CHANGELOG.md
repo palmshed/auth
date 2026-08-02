@@ -1,6 +1,11 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+## 1.1.0 (unreleased)
+
+### Added
+- `AuthClient.forgotPassword(username)` and `AuthClient.resetPassword(token, password)` methods, so client applications no longer need raw `fetch()` calls for the password recovery flow.
+
+## 1.0.0 (2026-08-02)
 
 ### Features
 - Argon2id password hashing via `@noble/hashes`

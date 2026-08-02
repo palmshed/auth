@@ -6,9 +6,9 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@palmshed/auth-core": "file:../../packages/core",
-    "@palmshed/auth-express": "file:../../packages/express",
-    "@palmshed/auth-storage-sqlite": "file:../../packages/storage-sqlite",
+    "@palmshed/auth-core": "^1.0.0",
+    "@palmshed/auth-express": "^1.0.0",
+    "@palmshed/auth-storage-sqlite": "^1.0.0",
     "express": "^4.21.0"
   },
   "devDependencies": {

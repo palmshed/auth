@@ -169,6 +169,12 @@ class AuthClient {
   signUp(username, password, email?, options?): Promise<AuthResponse>;
   signOut(options?): Promise<AuthResponse>;
   getSession(options?): Promise<AuthResponse>;
+  getConfig(options?): Promise<AuthResponse<{ captchaProvider, captchaSiteKey, allowRegistration }>>;
+  forgotPassword(username, options?): Promise<AuthResponse<void>>;
+  resetPassword(token, password, options?): Promise<AuthResponse<void>>;
   refreshToken(): Promise<AuthResponse>;
 }
 ```
+
+`forgotPassword` and `resetPassword` (added in 1.1.0) let client applications
+run the password recovery flow without raw `fetch()` calls.

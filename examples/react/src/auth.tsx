@@ -2,7 +2,7 @@ import { AuthClient, type AuthState, type User } from "@palmshed/auth-client";
 import { useState, useEffect, useCallback } from "react";
 
 const client = new AuthClient({
-  baseUrl: "http://localhost:3000/api",
+  baseUrl: "http://localhost:3000",
   storageKey: "session",
   refreshKey: "session_refresh",
 });

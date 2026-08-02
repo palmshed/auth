@@ -6,9 +6,9 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@palmshed/auth-core": "file:../../packages/core",
-    "@palmshed/auth-hono": "file:../../packages/hono",
-    "@palmshed/auth-storage-sqlite": "file:../../packages/storage-sqlite",
+    "@palmshed/auth-core": "^1.0.0",
+    "@palmshed/auth-hono": "^1.0.0",
+    "@palmshed/auth-storage-sqlite": "^1.0.0",
     "hono": "^4.6.0"
   },
   "devDependencies": {

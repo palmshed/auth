@@ -6,7 +6,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@palmshed/auth-client": "file:../../packages/client",
+    "@palmshed/auth-client": "^1.1.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },

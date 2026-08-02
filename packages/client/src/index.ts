@@ -178,6 +178,22 @@ export class AuthClient {
     }, false);
   }
 
+  async forgotPassword(username: string, options?: RequestOptions): Promise<AuthResponse<void>> {
+    return this.signedRequest<void>("/api/v1/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ username, captcha: options?.captcha }),
+      signal: options?.signal,
+    }, false);
+  }
+
+  async resetPassword(token: string, password: string, options?: { signal?: AbortSignal }): Promise<AuthResponse<void>> {
+    return this.signedRequest<void>("/api/v1/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+      signal: options?.signal,
+    }, false);
+  }
+
   async signOut(options?: { signal?: AbortSignal }): Promise<AuthResponse<void>> {
     const result = await this.signedRequest<void>("/api/v1/signout", { method: "POST", signal: options?.signal }, false);
     this.clearTokens();

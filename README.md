@@ -2,6 +2,15 @@
 
 Authentication platform for Palmshed projects.
 
+**Status: v1.0.0 released.** All packages are published to npm and the hosted service runs at https://palmshed-auth.vercel.app. The public API follows semantic versioning.
+
+- [Architecture](ARCHITECTURE.md)
+- [API reference](API.md)
+- [Security](SECURITY.md)
+- [Threat model](THREAT_MODEL.md)
+- [Operations](OPERATIONS.md)
+- [Upgrading to `@palmshed/auth-client`](UPGRADING.md)
+
 ## Packages
 
 | Package | Description |

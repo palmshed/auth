@@ -1,108 +1,80 @@
 # AGENTS.md
 
-## Project Structure
+## Status
+
+`palmshed/auth` is at **v1.0.0** (released and published to npm). The platform is in the adoption and maintenance phase.
+
+## Stability policy
+
+- Public APIs follow semantic versioning. Additions must be backward-compatible; breaking changes require a major version bump.
+- The hosted service at `apps/server` exposes versioned routes under `/api/v1`. The `v1` contract is stable.
+- Storage adapters implement the `AuthStorage` interface and run the same contract tests.
+
+## Release gate
+
+A version is released only when all of these hold:
+
+1. Lint, unit tests, and builds pass (`npm run lint`, `npm test`, `npm run build`).
+2. The Playwright E2E suite passes against a live deployment.
+3. Documentation is updated (CHANGELOG, API reference, migration notes).
+
+## Priorities
+
+1. **Adoption**: migrate Palmshed projects onto `@palmshed/auth-client` and the hosted service.
+2. **Compatibility**: keep the public API and the `/api/v1` contract stable.
+3. **Maintenance**: fix bugs and security issues without expanding the API.
+
+## Non-goals
+
+- No new foundational features without a real adopter asking for them.
+- No parallel authentication implementations in other repositories. Every Palmshed project either consumes the hosted service or embeds the published packages.
+- No breaking changes to the v1 API.
+
+## Project structure
 
 ```text
 palmshed/auth
-├── apps/
-│   └── server/          # Deployed authentication service (Vercel)
+├── apps/server/           # Hosted auth service, deploys to Vercel
 ├── packages/
-│   ├── core/            # Framework-agnostic auth engine
-│   ├── client/          # Browser/Node.js client
-│   ├── hono/            # Hono adapter (middleware + handlers)
-│   ├── express/         # Express adapter (middleware + router)
-│   ├── storage-postgres/# PostgreSQL storage adapter
-│   ├── storage-sqlite/  # SQLite storage adapter
-│   └── storage-redis/   # Redis rate limiter adapter
-├── examples/            # Example integrations
-└── templates/           # Production-ready templates
+│   ├── core/              # Framework-agnostic auth engine
+│   ├── client/            # Browser/Node.js client
+│   ├── hono/              # Hono adapter (middleware + handlers)
+│   ├── express/           # Express adapter (middleware + router)
+│   ├── storage-postgres/  # PostgreSQL storage adapter
+│   ├── storage-sqlite/    # SQLite storage adapter
+│   └── storage-redis/     # Redis rate limiter adapter
+├── examples/              # Reference integrations (use published packages)
+├── e2e/                   # Playwright suite against the live site + backend
+├── templates/             # Production-ready templates (empty, see examples)
 ```
 
-## Build
+## Commands
 
 ```bash
 npm install
-npm run build
+npm run build        # compile all workspaces
+npm test             # unit tests (56 tests across 8 files in core)
+npm run lint         # tsc --noEmit across the monorepo
+npm run test:e2e     # Playwright suite (see e2e/README.md)
+npm run dev -w @palmshed/auth-server   # local API server
 ```
 
-## Test
+## Deployment
 
-```bash
-# Run all tests
-npm test
+- The hosted service deploys to Vercel from `apps/server` (project root directory).
+- Preview deployments sit behind SSO deployment protection; CI uses a Protection Bypass for Automation secret.
+- Required environment variables are documented in `.env.example` and OPERATIONS.md.
 
-# Run specific package tests
-npm test -w packages/core
+## Releasing
 
-# Watch mode
-npm test -w packages/core -- --watch
-```
+1. Update package versions and `CHANGELOG.md`.
+2. Open a PR, let CI run (lint, test, build, e2e, Vercel deploy).
+3. Merge, then push an annotated tag `v<version>`.
+4. The CI `publish` job publishes all packages with provenance on tag push.
+5. Create a GitHub Release describing what shipped.
 
-## Dev Server
+`NPM_TOKEN` lives in the repository secrets and is never written to files or chat.
 
-```bash
-# Start the auth API server locally
-npm run dev -w @palmshed/auth-server
-```
+## First consumer migration
 
-## Test Coverage
-
-- **Core**: 56 tests across 8 test files
-  - `auth.test.ts` (13) — main auth flow
-  - `auth-security.test.ts` (6) — token forgery, expiry, revocation, disabled users
-  - `auth-concurrency.test.ts` (3) — concurrent signups/signins
-  - `auth-edge.test.ts` (10) — edge cases, empty/very long values
-  - `crypto.test.ts` (9) — signing, constant-time, token parsing
-  - `rbac.test.ts` (7) — permissions, roles, wildcards
-  - `rate-limit.test.ts` (4) — rate limiter behavior
-  - `token.test.ts` (4) — token generation and expiry
-
-## Storage Adapter Contract
-
-All storage adapters must implement `AuthStorage` interface. The memory storage serves as the reference implementation. To validate a new adapter:
-
-1. Implement `AuthStorage` interface
-2. Run existing auth tests against it
-3. Verify all session, user, signing key, and password reset operations
-
-## Release Process
-
-This repository stays at `v1.0.0-rc.1` until the library is validated in a production application.
-
-### Gate: v1.0.0
-
-Publish only after **all** phases are complete.
-
-#### Phase 1: Deploy
-
-- Create the Vercel project from `apps/server`
-- Configure all required environment variables
-- Verify the health endpoint and every authentication endpoint
-- Enable production logging and error reporting
-
-#### Phase 2: First Consumer
-
-- Migrate one Palmshed application to use the hosted authentication service
-- Remove its local authentication implementation
-- Do not add compatibility code to the application. If migration exposes friction, improve `palmshed/auth` instead
-
-#### Phase 3: Validation
-
-- Verify sign up, sign in, sign out, session restore, refresh, password reset, RBAC, and concurrent sessions
-- Verify deployment from a clean clone
-- Verify local development and production behave consistently
-
-#### Phase 4: Release
-
-- If the migration succeeds without API changes, tag `v1.0.0`
-- Publish the packages
-- Announce `palmshed/auth` as the standard authentication platform for the organization
-
-### After the gate
-
-No new authentication implementations should be created in individual repositories. Every project should either:
-
-- consume the hosted service (`apps/server`), or
-- embed the published packages when self-hosting is required.
-
-`palmshed/auth` is the single source of truth for authentication across the Palmshed ecosystem. Future work should focus on adoption, maintenance, and incremental improvements rather than creating parallel implementations.
+The palmshed.github.io sign-in pages were the first consumer of the hosted service and `@palmshed/auth-client`. That migration is the reference for future adopters; see UPGRADING.md.

@@ -66,3 +66,14 @@
 4. **Session hierarchy**: Three timeouts — `expiresIn` (standard session), `idleTimeout` (inactivity expiry), `absoluteLifetime` (hard maximum). Combined with device metadata for audit.
 
 5. **RBAC**: Simple string-based permissions (`resource:action`). Admins bypass all checks. Custom roles map to permission sets.
+
+## Hosted Service
+
+`apps/server` wires the core engine, a storage adapter, and the Hono adapter into a deployable HTTP service.
+
+- Built with Hono; deploys to Vercel with the project root directory set to `apps/server`.
+- Versioned routes live under `/api/v1` (signup, signin, signout, session, refresh, forgot-password, reset-password, config). Unversioned aliases are kept for backward compatibility.
+- Configuration is read from environment variables at boot (see OPERATIONS.md). No secrets are hardcoded.
+- A public `GET /api/v1/config` endpoint reports the captcha provider and site key so client pages can render the right widget.
+
+Consumers use the hosted service by pointing `@palmshed/auth-client` at its URL, or embed the published packages when self-hosting is required.

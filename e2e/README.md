@@ -27,9 +27,10 @@ Then pick an environment.
 
 ### Against a captcha-free preview (recommended)
 
-The site hardcodes `AUTH_BASE_URL = https://palmshed-auth.vercel.app`. When
-`API_BASE_URL` differs from that, the tests rewrite those API calls
-automatically, so the live site can be tested against a preview deployment.
+The site points `@palmshed/auth-client` at
+`https://palmshed-auth.vercel.app`. When `API_BASE_URL` differs from that, the
+tests rewrite those API calls automatically, so the live site can be tested
+against a preview deployment.
 
 ```sh
 BASE_URL=https://palmshed.github.io \
