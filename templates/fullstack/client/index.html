@@ -36,7 +36,10 @@
     .panel .user { margin-bottom: 1.5rem; }
     .panel .user .name { font-size: 1.125rem; font-weight: 500; }
     .panel .user .meta { color: var(--text-secondary); font-size: 0.8125rem; }
-    .hidden { display: none; }
+    .captcha-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .captcha-row .h-captcha { transform: scale(0.9); transform-origin: left; }
+    button.reset-captcha { background: none; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.75rem; cursor: pointer; }
+    button.reset-captcha:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
   </style>
 </head>
 <body>
@@ -58,6 +61,10 @@
         <div class="field">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <div class="captcha-row">
+          <div class="h-captcha"></div>
+          <button type="button" class="reset-captcha" id="resetCaptcha">Reset</button>
         </div>
         <button type="submit" id="submit">Sign in</button>
         <div class="row">
@@ -95,7 +102,66 @@
     var mode = 'login';
 
     function show(text, kind) { msg.textContent = text; msg.className = 'msg ' + (kind || ''); }
-    function captchaToken() { return ''; }
+    window.__captchaSiteKey = "";
+    window.__captchaProvider = "none";
+    var __captchaWidgetId = null;
+
+    function showCaptchaError() {
+      var el = document.querySelector('.h-captcha');
+      if (el && !el.querySelector('iframe')) {
+        el.outerHTML = '<p style="font-size:0.8125rem;color:var(--text-secondary)">Captcha unavailable. <a href="./index.html">Retry</a>.</p>';
+      }
+    }
+
+    function renderCaptcha() {
+      var el = document.querySelector('.h-captcha');
+      if (!el || el.querySelector('iframe')) return;
+      if (window.__captchaProvider === 'turnstile' && window.turnstile) {
+        __captchaWidgetId = turnstile.render(el, { sitekey: window.__captchaSiteKey, theme: 'dark' });
+      } else if (window.__captchaProvider === 'hcaptcha' && window.hcaptcha) {
+        __captchaWidgetId = hcaptcha.render(el, { sitekey: window.__captchaSiteKey, theme: 'dark' });
+      }
+    }
+    window.onHcaptchaLoad = renderCaptcha;
+
+    function captchaToken() {
+      if (window.__captchaProvider === 'turnstile' && window.turnstile && __captchaWidgetId != null) {
+        return turnstile.getResponse(__captchaWidgetId) || '';
+      }
+      if (window.hcaptcha) return hcaptcha.getResponse() || '';
+      return '';
+    }
+
+    function resetCaptcha() {
+      if (window.__captchaProvider === 'turnstile' && window.turnstile && __captchaWidgetId != null) {
+        turnstile.reset(__captchaWidgetId);
+      } else if (window.hcaptcha) {
+        hcaptcha.reset();
+      }
+    }
+
+    fetch('/api/v1/config').then(function (r) { return r.json(); }).then(function (cfg) {
+      window.__captchaSiteKey = cfg.captchaSiteKey || "";
+      window.__captchaProvider = cfg.captchaProvider || "none";
+      if (window.__captchaProvider !== 'none') {
+        var script = document.createElement('script');
+        script.src = window.__captchaProvider === 'turnstile'
+          ? 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+          : 'https://js.hcaptcha.com/1/api.js?onload=onHcaptchaLoad&render=explicit';
+        script.defer = true;
+        document.head.appendChild(script);
+        if (window.__captchaProvider === 'hcaptcha') {
+          window.onHcaptchaLoad = renderCaptcha;
+        } else {
+          script.onload = renderCaptcha;
+        }
+      }
+    }).catch(function () { showCaptchaError(); });
+
+    setTimeout(function () {
+      var el = document.querySelector('.h-captcha');
+      if (el && !el.querySelector('iframe')) showCaptchaError();
+    }, 8000);
 
     function showAuthed(user) {
       guest.classList.add('hidden');
@@ -145,6 +211,10 @@
       client.signOut().finally(function () { showGuest(); });
     });
 
+    document.getElementById('resetCaptcha').addEventListener('click', function () {
+      resetCaptcha();
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var username = document.getElementById('username').value.trim();
@@ -158,7 +228,7 @@
         client.signUp(username, password, email, { captcha: captchaToken() })
           .then(function (res) {
             if (res.ok) { show('Account created. You can now sign in.', 'ok'); toggle.click(); }
-            else show(res.error || 'Registration failed.', 'error');
+            else { resetCaptcha(); show(res.error || 'Registration failed.', 'error'); }
           })
           .finally(done);
         return;
@@ -167,7 +237,7 @@
       client.signIn(username, password, { captcha: captchaToken() })
         .then(function (res) {
           if (res.ok) showAuthed(res.data.user);
-          else show(res.error || 'Sign in failed.', 'error');
+          else { resetCaptcha(); show(res.error || 'Sign in failed.', 'error'); }
         })
         .finally(done);
     });

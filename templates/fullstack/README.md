@@ -44,8 +44,7 @@ All settings come from environment variables. See `.env.example` for the full
 list. The essentials:
 
 - `DATABASE_URL` - Postgres connection string.
-- `CAPTCHA_PROVIDER` - `none`, `hcaptcha`, or `turnstile`. The bundled client
-  sends an empty captcha token; wire in a widget if you enable a provider.
+- `CAPTCHA_PROVIDER` - `none`, `hcaptcha`, or `turnstile`. When set to `hcaptcha` or `turnstile`, the bundled client pages render the corresponding widget. Set `CAPTCHA_SITE_KEY` (or `TURNSTILE_SITE_KEY`) and `CAPTCHA_SECRET` (or `TURNSTILE_SECRET`) accordingly.
 - `ALLOWED_ORIGIN` - origin allowed to call the API cross-origin.
 - `RESEND_API_KEY` / `RESEND_FROM` - optional; enables password-reset email.
 

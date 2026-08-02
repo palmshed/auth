@@ -6,6 +6,7 @@
 - `templates/fullstack`: production-ready reference application (Hono + Postgres server, sign-in and reset-password pages using `@palmshed/auth-client`).
 - `docs/`: static HTML reference documentation (setup, configuration, client, server, storage, API, migration, deployment, troubleshooting).
 - `examples/`: README covering the Express, Hono, and React examples; the React example is now a runnable Vite app.
+- Turnstile captcha provider support alongside hCaptcha. `CAPTCHA_PROVIDER=turnstile` enables Cloudflare Turnstile verification; `CAPTCHA_PROVIDER=hcaptcha` keeps the existing behavior. Both providers share the same `CAPTCHA_SITE_KEY`/`CAPTCHA_SECRET` env var names (with `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET` as aliases). Frontend widget rendering is provider-aware and loads the correct script dynamically.
 
 ## 1.1.0 (2026-08-02)
 

@@ -66,6 +66,13 @@ npm run dev -w @palmshed/auth-server   # local API server
 - Preview deployments sit behind SSO deployment protection; CI uses a Protection Bypass for Automation secret.
 - Required environment variables are documented in `.env.example` and OPERATIONS.md.
 
+## Captcha providers
+
+- `CAPTCHA_PROVIDER` selects the provider: `none`, `hcaptcha`, or `turnstile`.
+- Both providers share `CAPTCHA_SITE_KEY`/`CAPTCHA_SECRET`; Turnstile also accepts `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET`.
+- Frontend widget rendering is provider-aware and loads the correct script dynamically.
+- hCaptcha has known Safari ITP incompatibilities (third-party storage isolation causes `api.hcaptcha.com/authenticate` to return 401 in WebKit); Turnstile is the recommended provider for Safari-heavy audiences.
+
 ## Releasing
 
 1. Update package versions and `CHANGELOG.md`.
