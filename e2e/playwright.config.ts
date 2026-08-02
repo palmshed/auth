@@ -17,6 +17,12 @@ export default defineConfig({
     viewport: { width: 1100, height: 800 },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+      ? {
+          "x-vercel-protection-bypass":
+            process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+        }
+      : undefined,
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });
