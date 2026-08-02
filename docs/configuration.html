@@ -74,6 +74,17 @@
         </tbody>
       </table>
 
+      <h3>Captcha providers</h3>
+      <table>
+        <thead>
+          <tr><th>Provider</th><th>Supported</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>hCaptcha</td><td>✅</td><td>Default. Has a known Safari/WebKit issue where <code>api.hcaptcha.com/authenticate</code> returns 401 due to third-party storage isolation.</td></tr>
+          <tr><td>Turnstile</td><td>✅</td><td>Recommended for Safari-heavy deployments. No known WebKit incompatibility.</td></tr>
+        </tbody>
+      </table>
+
       <h3>RBAC</h3>
       <p>Permissions are strings in the form <code>resource:action</code> (for example <code>admin:panel</code>). Users carry a <code>role</code> and a permission list. Defaults for roles can be set in <code>config.rbac</code>. The admin role bypasses permission checks.</p>
     </section>
